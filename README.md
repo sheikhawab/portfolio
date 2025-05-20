@@ -69,3 +69,11 @@ This section has moved here: [https://facebook.github.io/create-react-app/docs/d
 ### `npm run build` fails to minify
 
 This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+# Awab Portfolio
+
+[![Live Demo](./demo.gif)](https://awab.vercel.app)
+
+🔗 [Live Website](https://awab.vercel.app)
+
+## About
+This is a modern portfolio website built using React and hosted on Vercel...

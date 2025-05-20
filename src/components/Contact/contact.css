@@ -1,0 +1,314 @@
+/* #contactPage {
+    min-height: calc(100vh - 4rem);
+    width: 100vw;
+    max-width: 60rem;
+    margin: 0 auto;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.contactPageTitle {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+}
+
+.clientDesc {
+    font-weight: 300;
+    font-size: 1rem;
+}
+
+.clientImgs {
+    margin: 1rem 0;
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.clientImg {
+    object-fit: cover;
+    width: 23%;
+    min-width: 9rem;
+    margin: auto;
+    padding: 0.25rem;
+}
+
+#clients {
+    padding: 2rem;
+}
+
+.contactDesc {
+    padding: 1rem;
+    font-size: medium;
+    font-weight: 300;
+}
+
+.contactForm {
+    margin: 1rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 90vw;
+    max-width: 60rem;
+}
+
+.name, .email, .msg {
+    font-size: medium;
+    width: 100%;
+    max-width: 40rem;
+    margin: 0.5rem;
+    padding: 0.5rem 1rem;
+    color: white;
+    border: none;
+    border-radius: 0.5rem;
+    background: rgb(40, 40, 40);
+}
+
+.submitBtn {
+    background: white;
+    border: none;
+    border-radius: 0.5rem;
+    margin: 2rem;
+    padding: 0.75rem 3.5rem;
+}
+
+.links {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.link {
+    object-fit: cover;
+    height: 3rem;
+    width: 3rem;
+    margin: 0 0.75rem;
+}
+
+.phone{
+    position:fixed;
+    bottom:20px;
+    right:20px;
+    background:yellow;
+    color:black;
+    padding:12px 18px;
+    border-radius:50px;
+    text-decoration:none;
+    font-family:sans-serif;
+    box-shadow:0 4px 8px rgba(0,0,0,0.3);
+    z-index:999;
+} */
+
+ /* google ai studio */
+ /* Pehle se aapki CSS file mein #contactPage selector hoga, use section#contact ya .contactPage se target karein */
+/* For example: */
+section#contact.contactPage { /* Ya sirf .contactPage agar ID nahi use karna styling mein */
+    min-height: calc(100vh - 4rem);
+    width: 100vw;
+    max-width: 60rem; /* Ya aapki design ke mutabik */
+    margin: 0 auto;
+    padding: 2rem; /* Added some padding */
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center; /* Vertically center if content is less than min-height */
+    box-sizing: border-box;
+}
+
+.contactContentWrapper { /* Optional wrapper for content inside section */
+    width: 100%;
+    max-width: 50rem; /* Adjust as needed */
+}
+
+.contactPageTitle {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+}
+
+.contactDesc {
+    padding: 1rem 0; /* Adjusted padding */
+    font-size: medium;
+    font-weight: 300;
+    margin-bottom: 1rem; /* Added margin */
+}
+
+.contactForm {
+    margin: 1rem auto; /* Centering form if it's narrower */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%; /* Form takes width of its container */
+    max-width: 40rem; /* Max width for the form itself */
+}
+
+.name, .email, .msg {
+    font-size: medium;
+    width: 100%;
+    /* max-width: 40rem; */ /* This was on form, not needed on inputs if form has max-width */
+    margin: 0.5rem 0; /* Adjusted margin */
+    padding: 0.75rem 1rem; /* Slightly more padding */
+    color: white; /* Assuming dark background */
+    border: 1px solid #555; /* Added a subtle border */
+    border-radius: 0.5rem;
+    background: rgb(40, 40, 40); /* Your background */
+    box-sizing: border-box;
+}
+
+.submitBtn.btn { /* Targeting both classes if present */
+    background: white;
+    color: black;
+    border: none;
+    border-radius: 0.5rem; /* Match input fields */
+    margin: 2rem 0 1rem 0; /* Adjusted margin */
+    padding: 0.75rem 3.5rem;
+    cursor: pointer;
+    font-weight: bold;
+    transition: background-color 0.2s ease;
+}
+
+.submitBtn.btn:hover {
+    background-color: yellow; /* Your hover color */
+}
+
+.submitBtn.btn:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+}
+
+.formStatus { /* For success/error messages */
+  margin-top: 1rem;
+  padding: 0.75rem;
+  border-radius: 0.5rem;
+  font-weight: 500;
+}
+
+.formStatus.success {
+  color: #155724; /* Dark green text */
+  background-color: #d4edda; /* Light green background */
+  border: 1px solid #c3e6cb; /* Green border */
+}
+
+.formStatus.error {
+  color: #721c24; /* Dark red text */
+  background-color: #f8d7da; /* Light red background */
+  border: 1px solid #f5c6cb; /* Red border */
+}
+
+.links {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center; /* Center icons */
+    align-items: center;
+    margin-top: 2rem; /* Space above links */
+}
+
+.links a { /* Style the anchor tags directly for better click area */
+    margin: 0 0.75rem; /* Spacing between icons */
+    display: inline-block; /* To respect margin */
+    
+}
+
+.link { /* This class is on the img tag */
+    object-fit: cover;
+    height: 2.5rem; /* Slightly smaller icons */
+    width: 2.5rem;
+    /* margin: 0 0.75rem; */ /* Margin should be on <a> tag if img is wrapped */
+    transition: transform 0.2s ease;
+}
+.links a:hover .link { /* Hover effect on image when anchor is hovered */
+    transform: scale(1.1);
+}
+
+.phone {
+    position: fixed; /* Fixed position as per your original CSS */
+    bottom: 20px;
+    right: 20px;
+    background: yellow;
+    color: black;
+    padding: 12px 18px;
+    border-radius: 50px;
+    text-decoration: none;
+    font-family: sans-serif; /* Or your project's font */
+    box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+    z-index: 999; /* High z-index to stay on top */
+    font-weight: bold;
+    transition: background-color 0.2s ease;
+}
+.phone:hover {
+    background-color: #ffd700; /* Darker yellow on hover */
+}
+
+/* extracode for mobiel */
+/* =================================== */
+/* MOBILE STYLES (for screens < 720px) */
+/* =================================== */
+@media screen and (max-width: 720px) {
+
+    /* Optional: Adjust overall padding for the contact section on mobile */
+    section#contact.contactPage {
+        padding: 1.5rem 1rem; /* Thoda kam padding mobile par */
+    }
+
+    /* Optional: Adjust title and description font sizes on mobile */
+    .contactPageTitle {
+        font-size: 2.2rem; /* Thoda chhota title mobile par */
+    }
+    .contactDesc {
+        font-size: 0.9rem; /* Thoda chhota description */
+        padding: 0.5rem 0;
+    }
+
+    /* Optional: Adjust form width and input fields for mobile */
+    .contactForm {
+        width: 100%; /* Form ko poori available width dein */
+        padding: 0 0.5rem; /* Form ke andar thodi side padding agar inputs edge tak ja rahe hon */
+        box-sizing: border-box;
+    }
+    .name, .email, .msg {
+        font-size: 1rem; /* Inputs ka font size mobile ke liye */
+        padding: 0.6rem 0.8rem;
+    }
+
+    /* --- SUBMIT BUTTON STYLING FOR MOBILE --- */
+    .submitBtn.btn {
+        width: 100%; /* Button ko poori available width ka banayein */
+        max-width: 300px; /* Optional: Button bahut zyada chauda na ho, agar form narrow hai */
+        padding: 0.8rem 1rem; /* Padding adjust karein mobile ke liye */
+        font-size: 1.1rem;  /* Font size thoda bada kar sakte hain readability ke liye */
+        margin-top: 1.5rem; /* Upar se thoda margin */
+        margin-bottom: 1rem; /* Neeche se thoda margin */
+        /* Baaki properties (background, color, border-radius) desktop wali hi rahengi
+           agar aap unhe yahan override nahi karte. */
+    }
+    /* --- END OF SUBMIT BUTTON STYLING FOR MOBILE --- */
+
+
+    /* Optional: Adjust social links on mobile */
+    .links {
+        margin-top: 1.5rem;
+    }
+    .links a {
+        margin: 0 0.5rem; /* Icon ke beech mein thodi kam space */
+    }
+    .link { /* Icon images */
+        height: 2.2rem;
+        width: 2.2rem;
+    }
+
+    /* Optional: Adjust fixed "Call Me" button for mobile */
+    .phone {
+        padding: 10px 15px;
+        font-size: 0.9rem; /* Chhota font size */
+        bottom: 15px;
+        right: 15px;
+    }
+
+    /* Optional: Adjust form status message for mobile */
+    .formStatus {
+        font-size: 0.9rem;
+        margin-top: 0.8rem;
+    }
+}

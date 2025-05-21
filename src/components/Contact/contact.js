@@ -1,8 +1,5 @@
-/// google ai sutdio
-// 1. Ensure this CSS import is correct and the file exists at this path
 import "./contact.css";
 
-// 2. Ensure these image paths are correct relative to this Contact.js file
 import github from "../../assets/github2.png";
 import linkdin from "../../assets/linkdin.png";
 import whatsapp from "../../assets/whatsapp.png";
@@ -16,12 +13,11 @@ const Contact = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitStatus, setSubmitStatus] = useState("");
 
-  // --- Replace with your ACTUAL EmailJS Details ---
-  const EMAILJS_SERVICE_ID = "awab"; // Your Service ID
-  const EMAILJS_ADMIN_TEMPLATE_ID = "template_stzovci"; // Your Template ID for emails TO YOU
+  // --- Updated EmailJS Details ---
+  const EMAILJS_SERVICE_ID = "service_adtg7in"; // Your Service ID
+  const EMAILJS_ADMIN_TEMPLATE_ID = "template_i5p8fbp"; // Your Template ID for emails TO YOU
   // VVVV IMPORTANT: Create a NEW template in EmailJS for auto-response TO USER VVVV
-  const EMAILJS_USER_AUTORESPONSE_TEMPLATE_ID =
-    "YOUR_NEW_USER_AUTORESPONSE_TEMPLATE_ID"; // <<== REPLACE THIS
+  const EMAILJS_USER_AUTORESPONSE_TEMPLATE_ID = "template_zywgvdd"; // <<== Aapki sahi user auto-response ID
   const EMAILJS_PUBLIC_KEY = "Gi4YSpcgNXagkOR5y"; // Your Public Key
   // --- End of EmailJS Details ---
 
@@ -33,8 +29,9 @@ const Contact = () => {
     setSubmitStatus("");
 
     const formData = new FormData(form.current);
-    const name = formData.get("from_name");
-    const userEmail = formData.get("from_email"); // Using userEmail for clarity
+    const userName = formData.get("from_name"); // Form se 'from_name' field -> userName variable
+    const userEmailAddress = formData.get("from_email"); // Form se 'from_email' field -> userEmailAddress variable
+    const userMessage = formData.get("message"); // Form se 'message' field -> userMessage variable
 
     // 1. Send email to Admin
     emailjs
@@ -48,24 +45,47 @@ const Contact = () => {
         (result) => {
           console.log("Admin email sent:", result.text);
 
-          // 2. Send auto-response email to User
+          // 2. Prepare parameters for User Auto-Response
+          // Match these parameter names with variables in your EmailJS user auto-response template
           const autoresponseParams = {
-            from_name: name, // For "Hi {{from_name}}" in user template
-            to_email: userEmail, // User's email for "To Email" field in user template
-            // Ensure your NEW user auto-response template uses {{to_email}} in its "To Email" setting.
+            // Agar aapke user auto-response template mein {{name}} hai:
+            name: userName, // Aapke EmailJS template mein "Hi {{name}}" hai
+            // Agar aapke user auto-response template mein {{from_name}} hai:
+            // from_name: userName,
+
+            // Screenshot ke "To Email" field mein {{email}} tha,
+            // isliye hum yahan 'email' naam ka parameter bhej rahe hain
+            email: userEmailAddress, // Aapke EmailJS template ke "To Email" field mein {{email}} hai
+            // Agar "To Email" field mein {{to_email}} hota, toh hum bhejte:
+            // to_email: userEmailAddress,
+
+            // Agar aapke user auto-response template mein {{title}} hai (screenshot mein dikh raha tha), aur aap
+            // subject line ya kuch bhejna chahte hain:
+            // title: "Regarding your inquiry", // Example static title
+            // Ya agar form mein 'title' field hota toh: formData.get("title")
+            // ABHI KE LIYE, AGAR AAPKE TEMPLATE MEIN {{title}} HAI AUR AAP CODE SE NAHI BHEJ RAHE,
+            // TOH WOH EMAIL MEIN KHAALI AAYEGA. AGAR ZAROORI NAHI TOH TEMPLATE SE HATA DEIN.
+
+            // Agar user auto-response template mein user ka message {{message}} dikhana hai
+            message: userMessage, // Agar aapke template mein user ka message dikhana hai
           };
 
-          // Check if a user auto-response template ID is provided
-          if (
-            EMAILJS_USER_AUTORESPONSE_TEMPLATE_ID &&
-            EMAILJS_USER_AUTORESPONSE_TEMPLATE_ID !==
-              "YOUR_NEW_USER_AUTORESPONSE_TEMPLATE_ID"
-          ) {
+          // --- THEEK KI HUI IF CONDITION ---
+          // Check if a user auto-response template ID is valid and not a placeholder
+          // Hum yeh maan rahe hain ki agar ID "template_" se shuru hoti hai toh woh valid hai.
+          // Aur woh original placeholder "YOUR_NEW_USER_AUTORESPONSE_TEMPLATE_ID" nahi honi chahiye.
+          const placeholderForUserTemplateID = "YOUR_NEW_USER_AUTORESPONSE_TEMPLATE_ID"; // Original placeholder value
+          const isValidUserTemplateId =
+            EMAILJS_USER_AUTORESPONSE_TEMPLATE_ID && // ID maujood ho
+            EMAILJS_USER_AUTORESPONSE_TEMPLATE_ID.startsWith("template_") && // 'template_' se shuru ho
+            EMAILJS_USER_AUTORESPONSE_TEMPLATE_ID !== placeholderForUserTemplateID; // Aur placeholder na ho
+
+          if (isValidUserTemplateId) {
             emailjs
-              .send(
+              .send( // Using .send() for specific parameters
                 EMAILJS_SERVICE_ID,
-                EMAILJS_USER_AUTORESPONSE_TEMPLATE_ID, // Use the NEW template ID for user
-                autoresponseParams,
+                EMAILJS_USER_AUTORESPONSE_TEMPLATE_ID,
+                autoresponseParams, // Parameters for the user's email
                 EMAILJS_PUBLIC_KEY
               )
               .then(
@@ -85,11 +105,12 @@ const Contact = () => {
                 }
               );
           } else {
-            // If no user auto-response template is set up, just show success for admin email
-            console.log(
-              "User auto-response template not configured. Skipping auto-response."
+            // Agar ID valid nahi hai ya placeholder hai
+            console.warn( // Changed to warn
+              "User auto-response template ID is not configured correctly or is a placeholder. Skipping auto-response. Current ID:",
+              EMAILJS_USER_AUTORESPONSE_TEMPLATE_ID
             );
-            setSubmitStatus("Email sent successfully! 📩");
+            setSubmitStatus("Message sent! We'll be in touch. 📩 (Auto-reply skipped)"); // User ko batayein
             form.current.reset();
           }
         },
@@ -161,8 +182,9 @@ const Contact = () => {
             <p
               className={`formStatus ${
                 submitStatus.includes("Failed") ||
-                submitStatus.includes("couldn't")
-                  ? "error"
+                submitStatus.includes("couldn't") ||
+                submitStatus.includes("skipped") // "skipped" wala message error/warning jaisa dikh sakta hai
+                  ? "error" // Aap "warning" class bhi bana sakte hain
                   : "success"
               }`}
             >
@@ -198,7 +220,7 @@ const Contact = () => {
           >
             <img src={whatsapp} alt="WhatsApp Me" className="link" />
           </a>
-          {/* Instagram Link */}
+          {/* Call Link */}
           <a href="tel:+966546343458" target="_blank" rel="noopener noreferrer">
             <img src={call} alt="+966546343458" className="link" />
           </a>
@@ -212,172 +234,218 @@ const Contact = () => {
 };
 
 export default Contact;
+
+// ///////// pahley wala code //////////
+
+
 // import "./contact.css";
+
 // import github from "../../assets/github2.png";
 // import linkdin from "../../assets/linkdin.png";
 // import whatsapp from "../../assets/whatsapp.png";
-// import instagramIcon from "../../assets/instagram.png";
-// import React, { useRef } from "react";
+// import call from "../../assets/call.png";
+
+// import React, { useRef, useState } from "react"; // Added useState
 // import emailjs from "@emailjs/browser";
 
 // const Contact = () => {
 //   const form = useRef();
+//   const [isSubmitting, setIsSubmitting] = useState(false);
+//   const [submitStatus, setSubmitStatus] = useState("");
+
+//   // --- Replace with your ACTUAL EmailJS Details ---
+//   const EMAILJS_SERVICE_ID = "service_adtg7in"; // Your Service ID
+//   const EMAILJS_ADMIN_TEMPLATE_ID = "template_i5p8fbp"; // Your Template ID for emails TO YOU
+//   // VVVV IMPORTANT: Create a NEW template in EmailJS for auto-response TO USER VVVV
+//   const EMAILJS_USER_AUTORESPONSE_TEMPLATE_ID =
+//     "template_zywgvdd"; // <<== REPLACE THIS
+//   const EMAILJS_PUBLIC_KEY = "Gi4YSpcgNXagkOR5y"; // Your Public Key
+//   // --- End of EmailJS Details ---
 
 //   const sendEmail = (e) => {
 //     e.preventDefault();
+//     if (isSubmitting) return;
+
+//     setIsSubmitting(true);
+//     setSubmitStatus("");
 
 //     const formData = new FormData(form.current);
 //     const name = formData.get("from_name");
-//     const email = formData.get("from_email");
-
-//     // Admin ko message bhejna
+//     const userEmail = formData.get("from_email"); // Using userEmail for clarity
+      //  const userMessage = formData.get("message");
+//     // 1. Send email to Admin
 //     emailjs
-//       .sendForm("awab", "template_stzovci", form.current, "Gi4YSpcgNXagkOR5y")
-//       .then((result) => {
-//         console.log("Admin email sent:", result.text);
+//       .sendForm(
+//         EMAILJS_SERVICE_ID,
+//         EMAILJS_ADMIN_TEMPLATE_ID,
+//         form.current, // form.current sends all form fields to your admin template
+//         EMAILJS_PUBLIC_KEY
+//       )
+//       .then(
+//         (result) => {
+//           console.log("Admin email sent:", result.text);
 
-//         // Auto-response user ko bhejna
-//         emailjs
-//           .send(
-//             "awab",
-//             "template_stzovci",
-//             {
-//               from_name: name,
-//               to_email: email,
-//             },
-//             "Gi4YSpcgNXagkOR5y"
-//           )
-//           .then((res) => {
-//             console.log("User auto-response sent:", res.text);
-//             alert("Email Sent! Check your inbox 📩");
-//             e.target.reset();
-//           })
-//           .catch((err) => console.log("Auto-response error:", err.text));
-//       })
-//       .catch((error) => {
-//         console.log("Admin email error:", error.text);
+//           // 2. Send auto-response email to User
+//           const autoresponseParams = {
+//             from_name: name, // For "Hi {{from_name}}" in user template
+//             to_email: userEmail, // User's email for "To Email" field in user template
+//             // Ensure your NEW user auto-response template uses {{to_email}} in its "To Email" setting.
+//           };
+
+//           // Check if a user auto-response template ID is provided
+//           if (
+//             EMAILJS_USER_AUTORESPONSE_TEMPLATE_ID &&
+//             EMAILJS_USER_AUTORESPONSE_TEMPLATE_ID !==
+//               "YOUR_NEW_USER_AUTORESPONSE_TEMPLATE_ID"
+//           ) {
+//             emailjs
+//               .send(
+//                 EMAILJS_SERVICE_ID,
+//                 EMAILJS_USER_AUTORESPONSE_TEMPLATE_ID, // Use the NEW template ID for user
+//                 autoresponseParams,
+//                 EMAILJS_PUBLIC_KEY
+//               )
+//               .then(
+//                 (res) => {
+//                   console.log("User auto-response sent:", res.text);
+//                   setSubmitStatus(
+//                     "Email sent successfully! Check your inbox for a confirmation. 📩"
+//                   );
+//                   form.current.reset();
+//                 },
+//                 (err) => {
+//                   console.error("User auto-response failed:", err.text);
+//                   setSubmitStatus(
+//                     "Your message was sent, but we couldn't send a confirmation email."
+//                   );
+//                   form.current.reset(); // Still reset form as admin email was sent
+//                 }
+//               );
+//           } else {
+//             // If no user auto-response template is set up, just show success for admin email
+//             console.log(
+//               "User auto-response template not configured. Skipping auto-response."
+//             );
+//             setSubmitStatus("Email sent successfully! 📩");
+//             form.current.reset();
+//           }
+//         },
+//         (error) => {
+//           console.error("Admin email failed to send:", error.text);
+//           setSubmitStatus(
+//             "Failed to send your message. Please try again later."
+//           );
+//         }
+//       )
+//       .finally(() => {
+//         setIsSubmitting(false);
 //       });
 //   };
 
 //   return (
-//     <section id="contactPage">
-//      <div id=" clients">
+//     // id="contact" for react-scroll (Navbar link `to="contact"`)
+//     // className="contactPage" agar aapki CSS #contactPage ko target kar rahi hai.
+//     // Agar CSS #contactPage se styling hai toh section ka id "contactPage" rakhein aur
+//     // Navbar mein Link to="contactPage" karein.
+//     // Main yahan id="contact" rakh raha hoon, maan kar ki aap Navbar mein to="contact" use kar rahe hain.
+//     <section id="contact" className="contactPage">
+//       {" "}
+//       {/* Added className for CSS if #contactPage is used */}
+//       {/* This inner div can be used if your CSS expects #contactPage > div structure */}
+//       {/* Removed id=" clients" as it had a leading space and might not be the correct target for react-scroll */}
+//       <div className="contactContentWrapper">
+//         {" "}
+//         {/* Added a class for potential inner styling */}
 //         <h1 className="contactPageTitle">Contact Me</h1>
 //         <span className="contactDesc">
-//           Please fill out the form below to discuss any work opportunities.
+//           Feel free to contact through the form below to discuss any work
+//           opportunities.
 //         </span>
 //         <form className="contactForm" ref={form} onSubmit={sendEmail}>
 //           <input
 //             type="text"
-//             className="name"
+//             className="name" // CSS: .name
 //             placeholder="Your name"
-//             name="from_name"
+//             name="from_name" // For EmailJS template: {{from_name}}
 //             required
+//             disabled={isSubmitting}
 //           />
 //           <input
 //             type="email"
-//             className="email"
+//             className="email" // CSS: .email
 //             placeholder="Your Email"
-//             name="from_email"
+//             name="from_email" // For EmailJS template: {{from_email}}
 //             required
+//             disabled={isSubmitting}
 //           />
 //           <textarea
-//             name="message"
+//             name="message" // For EmailJS template: {{message}}
 //             placeholder="Your Message"
 //             rows={5}
-//             className="msg"
+//             className="msg" // CSS: .msg
 //             required
+//             disabled={isSubmitting}
 //           ></textarea>
-//           <button type="submit" value="Send" className="submitBtn btn ">
-//             Submit
+//           <button
+//             type="submit"
+//             className="submitBtn btn" // CSS: .submitBtn and .btn
+//             disabled={isSubmitting}
+//           >
+//             {isSubmitting ? "Sending..." : "Submit"}
 //           </button>
-//           <div className="links">
-//             <img src={github} alt="github" className="link" />
-//             <img src={linkdin} alt="linkdin" className="link" />
-//             <a
-//               href="https://wa.me/966546343458?text=Hi%20there!%20I%20found%20you%20through%20your%20website"
-//               target="_blank"
-//               rel="noopener noreferrer"
+//           {submitStatus && (
+//             // You can style this paragraph based on success/error
+//             <p
+//               className={`formStatus ${
+//                 submitStatus.includes("Failed") ||
+//                 submitStatus.includes("couldn't")
+//                   ? "error"
+//                   : "success"
+//               }`}
 //             >
-//               <img src={whatsapp} alt="WhatsApp" className="link" />
-//             </a>
-//             <a href="tel:+966546343458" className="phone">
-//               📞 Call Me
-//             </a>
-
-//             <img src={instagramIcon} alt="Instagram" className="link" />
-//           </div>
+//               {submitStatus}
+//             </p>
+//           )}
 //         </form>
+//         <div className="links">
+//           {" "}
+//           {/* CSS: .links */}
+//           {/* GitHub Link */}
+//           <a
+//             href="https://github.com/sheikhawab"
+//             target="_blank"
+//             rel="noopener noreferrer"
+//           >
+//             <img src={github} alt="GitHub Profile" className="link" />{" "}
+//             {/* CSS: .link */}
+//           </a>
+//           {/* LinkedIn Link */}
+//           <a
+//             href="https://linkedin.com/in/sheikhawaab"
+//             target="_blank"
+//             rel="noopener noreferrer"
+//           >
+//             <img src={linkdin} alt="LinkedIn Profile" className="link" />
+//           </a>
+//           {/* WhatsApp Link */}
+//           <a
+//             href="https://wa.me/966546343458?text=Hi%20there!%20I%20found%20you%20through%20your%20website"
+//             target="_blank"
+//             rel="noopener noreferrer"
+//           >
+//             <img src={whatsapp} alt="WhatsApp Me" className="link" />
+//           </a>
+//           {/* Instagram Link */}
+//           <a href="tel:+966546343458" target="_blank" rel="noopener noreferrer">
+//             <img src={call} alt="+966546343458" className="link" />
+//           </a>
+//         </div>
 //       </div>
+//       {/* "Call Me" button - iski styling .phone class se honi chahiye */}
+//       {/* Isko maine contactContentWrapper div se bahar rakha hai */}
+//       {/* <a href="tel:+966546343458" className="phone">📞 Call Me</a> */}
 //     </section>
 //   );
 // };
-
-// export default Contact;
-
-// ///// readymade component ///////////
-// import './contact.css';
-// import Walmart from '../../assets/walmart.png';
-// import Adobe from '../../assets/adobe.png';
-// import Microsoft from '../../assets/microsoft.png';
-// import Facebook from '../../assets/facebook.png';
-// import facebookIcon from '../../assets/facebook-icon.png';
-// import twitterIcon from '../../assets/twitter.png';
-// import youtubeIcon from '../../assets/youtube.png';
-// import instagramIcon from '../../assets/instagram.png';
-// import React, { useRef } from 'react';
-// import emailjs from '@emailjs/browser';
-
-// const Contact = () => {
-//     const form = useRef();
-
-//     const sendEmail = (e) => {
-//         e.preventDefault();
-
-//         // emailjs.sendForm('service_6phm4ar', 'template_zcxds5a', form.current, 'blaHt_5KIJ711DfGH')
-//         emailjs.sendForm('awab', 'template_zcxds5a', form.current, 'blaHt_5KIJ711DfGH')
-//             .then((result) => {
-//                 console.log(result.text);
-//                 e.target.reset();
-//                 alert('Email Sent !');
-//             }, (error) => {
-//                 console.log(error.text);
-//             });
-//     };
-
-//     return (
-//         <div id='contactPage'>
-//             <div id="clients">
-//                 <h1 className="contactPageTitle">My clients</h1>
-//                 <span className="clientDesc">
-//                     I have had the opportunity to work with a diverse group of companies.
-//                     Some of the notable companies I have worked with includes
-//                 </span>
-//                 <div className="clientImgs">
-//                     <img src={Walmart} alt="Client" className="clientImg" />
-//                     <img src={Adobe} alt="Client" className="clientImg" />
-//                     <img src={Microsoft} alt="Client" className="clientImg" />
-//                     <img src={Facebook} alt="Client" className="clientImg" />
-//                 </div>
-//             </div>
-//             <div id="contact">
-//                 <h1 className="contactPageTitle">Contact Me</h1>
-//                 <span className="contactDesc">Please fill out the form below to discuss any work opportunities.</span>
-//                 <form className="contactForm" ref={form} onSubmit={sendEmail}>
-//                     <input type="text" className="name" placeholder='Your name' name='from_name' />
-//                     <input type="text" className="email" placeholder='Your Email' name='from_email' />
-//                     <textarea name="message" placeholder='Your Message' rows={5} className='msg' ></textarea>
-//                     <button type="submit" value="Send" className='submitBtn'>Submit</button>
-//                     <div className="links">
-//                         <img src={facebookIcon} alt="Facebook" className="link" />
-//                         <img src={twitterIcon} alt="Twitter" className="link" />
-//                         <img src={youtubeIcon} alt="YouTube" className="link" />
-//                         <img src={instagramIcon} alt="Instagram" className="link" />
-//                     </div>
-//                 </form>
-//             </div>
-//         </section>
-//     );
-// }
 
 // export default Contact;

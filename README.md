@@ -1,8 +1,6 @@
 # Awab Portfolio
 ![Demo GIF](demo.gif)
 
-[![Live Demo](./demo.gif)](https://awab.vercel.app)
-
 🔗 [Visit Live Website](https://awab.vercel.app)
 
 ## 📌 About
@@ -28,14 +26,6 @@ It highlights my skills, showcases my projects, and provides a way to get in tou
 - JavaScript (ES6+)
 - HTML5 & CSS3
 - Vercel (Deployment)
-
----
-
-## 📷 Preview
-
-Click the image below to view the live site:
-
-[![Awab Portfolio Preview](./demo.gif)](https://awab.vercel.app)
 
 ---
 
